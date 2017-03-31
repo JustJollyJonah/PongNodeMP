@@ -1,0 +1,145 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('nodepongattempt2:server');
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+var game = require('../public/javascripts/gamecore');
+var UUID = require('uuid');
+
+io.on('connection', onConnection);
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http;
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
+
+function onConnection(socket) {
+  console.log("user connected via websocket");
+  socket.userid = UUID();
+  socket.emit("connected", {id: socket.userid});
+  socket.on('join', function(data) {
+    console.log("join received");
+    var roomnumber = parseInt(data.roomnumber);
+    var username = data.username;
+    console.log(game.game.rooms);
+    console.log(data.roomnumber + ' ' + data.username);
+    var newgame = new game.Room(roomnumber);
+    var found = false;
+    var index = 0;
+    for(var i = 0; i < game.game.rooms.length; i++) {
+      console.log(game.game.rooms[i].roomnumber + " " + roomnumber);
+      if(game.game.rooms[i].roomnumber == roomnumber) {
+        found = true;
+        index = i;
+        break;
+      }
+    }
+    if(!found) {
+      newgame.addPlayer(username);
+      game.game.rooms.push(newgame);
+      game.game.users.push(username);
+      socket.username = username;
+
+      socket.emit('login', { status: "host", game: game.game.rooms[game.game.rooms.indexOf(newgame)]})
+    } else {
+      game.game.users.push(username);
+      game.game.rooms[index].addPlayer(username);
+      socket.username = username;
+      socket.emit('login', { status: 'joined', game: game.game.rooms[index]})
+    }
+    socket.on("start", startGameAtRoom);
+  });
+
+
+
+
+
+  function startGameAtRoom(socket) {
+    console.log(socket);
+    if(socket.players.length == 2) {
+      game.game.rooms[game.game.rooms.indexOf(socket)].startGame();
+    }
+  }
+}
