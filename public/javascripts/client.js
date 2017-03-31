@@ -15,12 +15,13 @@ $(document).on("click", "#mgyBtn",function () {
 });
 io.on('login', function(data) {
     console.log("Sucessfully logged in as " + data.status);
-    this.localgame = data.game;
+    localgame = data.game;
     console.log(localgame);
 
 });
 io.on('playerjoined', function(game) {
-    this.localgame = game;
+    localgame = game;
+    console.log('other player joined');
 });
 
 $(document).on("click", "#start", function() {
@@ -30,7 +31,7 @@ $(document).on("click", "#start", function() {
 io.on('started', startGameLocal);
 
 function startGameLocal(game) {
-    this.localgame.startGame();
+    localgame.startGame();
 }
 io.on('update', console.log("Hello"));
 function Setup() {
