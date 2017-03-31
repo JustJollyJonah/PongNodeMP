@@ -15,9 +15,12 @@ $(document).on("click", "#mgyBtn",function () {
 });
 io.on('login', function(data) {
     console.log("Sucessfully logged in as " + data.status);
-    localgame = data.game;
+    this.localgame = data.game;
     console.log(localgame);
 
+});
+io.on('playerjoined', function(game) {
+    this.localgame = game;
 });
 
 $(document).on("click", "#start", function() {
@@ -27,9 +30,9 @@ $(document).on("click", "#start", function() {
 io.on('started', startGameLocal);
 
 function startGameLocal(game) {
-    this.localinstance.startGame();
+    this.localgame.startGame();
 }
-io.on('update', updateGame);
+io.on('update', console.log("Hello"));
 function Setup() {
     console.log("setup gerund");
     $(document).on("click", "#myBtn", function(){

@@ -127,6 +127,7 @@ function onConnection(socket) {
             game.game.rooms[index].addPlayer(username, socket.id);
             socket.username = username;
             socket.emit('login', {status: 'joined', game: game.game.rooms[index]});
+            emitJoinToRoom(game.game.rooms[index]);
             // console.log(game.game.rooms[index])
         }
         socket.on("start", function (data) {
@@ -148,7 +149,43 @@ function onConnection(socket) {
 
     function emitStartedToRoom(room) {
       room.players.forEach(function(item, index) {
-        io.sockets.socket(item.id).emit('started', room.localinstance)
+        io.to(item.id).emit("started", room.localinstance);
+        console.log("Sent biatch");
       })
     }
+    function emitJoinToRoom(room) {
+        room.players.forEach(function(item, index) {
+            io.to(item.id).emit("playerjoined", room.localinstance);
+            console.log("Sent biatch");
+        })
+    }
 }
+
+setInterval(updateGames, 45);
+setInterval(updatePhysics, 15);
+
+function updateGames() {
+// console.log(game.startedRooms);
+    game.game.startedRooms.forEach(function(item, index) {
+        item.updateGames();
+        console.log("Updated");
+        syncGame(item)
+    })
+
+}
+function updatePhysics() {
+    game.game.startedRooms.forEach(function(item, index) {
+        item.updatePhysics();
+        console.log("Updated");
+        syncGame(item)
+    })
+
+
+}
+function syncGame(game) {
+    game.players.forEach(function(item, index) {
+        io.to(item.id).emit('update',game.localinstance)
+    })
+}
+
+
