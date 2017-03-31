@@ -94,65 +94,61 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 function onConnection(socket) {
-  console.log("user connected via websocket");
-  socket.userid = UUID();
-  socket.emit("connected", {id: socket.userid});
-  socket.on('join', function(data) {
-    console.log("join received");
-    var roomnumber = parseInt(data.roomnumber);
-    var username = data.username;
-    // console.log(game.game.rooms);
-    // console.log(data.roomnumber + ' ' + data.username);
-    var newgame = new game.Room(roomnumber);
-    var found = false;
-    var index = 0;
-    socket.room = newgame;
-    for(var i = 0; i < game.game.rooms.length; i++) {
-      // console.log(game.game.rooms[i].roomnumber + " " + roomnumber);
-      if(game.game.rooms[i].roomnumber == roomnumber) {
-        found = true;
-        index = i;
-        break;
-      }
-    }
-    if(!found) {
-      newgame.addPlayer(username,socket.id);
-      game.game.rooms.push(newgame);
-      game.game.users.push(username);
-      socket.username = username;
-
-      socket.emit('login', { status: "host", game: game.game.rooms[game.game.rooms.indexOf(newgame)]})
-    } else {
-      game.game.users.push(username);
-      game.game.rooms[index].addPlayer(username,socket.id);
-      socket.username = username;
-      socket.emit('login', { status: 'joined', game: game.game.rooms[index]});
-      // console.log(game.game.rooms[index])
-    }
-    socket.on("start", function(data) {
-        // console.log(socket.room);
-        var current_room = game.game.rooms.filter(function(item) {
-          if(item.roomnumber == data.roomnumber) {
-            return item;
-          }
-        });
-        console.log(current_room[0].players.length);
-        if(current_room[0].players.length == 2) {
-          console.log('hello');
-           current_room[0].startGame();
+    console.log("user connected via websocket");
+    socket.userid = UUID();
+    socket.emit("connected", {id: socket.userid});
+    socket.on('join', function (data) {
+        console.log("join received");
+        var roomnumber = parseInt(data.roomnumber);
+        var username = data.username;
+        // console.log(game.game.rooms);
+        // console.log(data.roomnumber + ' ' + data.username);
+        var newgame = new game.Room(roomnumber);
+        var found = false;
+        var index = 0;
+        socket.room = newgame;
+        for (var i = 0; i < game.game.rooms.length; i++) {
+            // console.log(game.game.rooms[i].roomnumber + " " + roomnumber);
+            if (game.game.rooms[i].roomnumber == roomnumber) {
+                found = true;
+                index = i;
+                break;
+            }
         }
+        if (!found) {
+            newgame.addPlayer(username, socket.id);
+            game.game.rooms.push(newgame);
+            game.game.users.push(username);
+            socket.username = username;
+
+            socket.emit('login', {status: "host", game: game.game.rooms[game.game.rooms.indexOf(newgame)]})
+        } else {
+            game.game.users.push(username);
+            game.game.rooms[index].addPlayer(username, socket.id);
+            socket.username = username;
+            socket.emit('login', {status: 'joined', game: game.game.rooms[index]});
+            // console.log(game.game.rooms[index])
+        }
+        socket.on("start", function (data) {
+            // console.log(socket.room);
+            var current_room = game.game.rooms.filter(function (item) {
+                if (item.roomnumber == data.roomnumber) {
+                    return item;
+                }
+            });
+            console.log(current_room[0].players.length);
+            if (current_room[0].players.length == 2) {
+                console.log('hello');
+                current_room[0].startGame();
+                emitStartedToRoom(current_room[0])
+            }
+        });
     });
-  });
 
 
-
-  function emitToRoom(socket, msg, data) {
-    clients.forEach(function(item, index) {
-      socket.players.forEach(function(item2, index2) {
-          if(item2 == item.name) {
-            io.sockets.socket(item.id).emit(msg, data)
-          }
-        })
-    })
-  }
+    function emitStartedToRoom(room) {
+      room.players.forEach(function(item, index) {
+        io.sockets.socket(item.id).emit('started', room.localinstance)
+      })
+    }
 }

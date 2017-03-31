@@ -43,7 +43,7 @@ function Room(roomnumber) {
     this.stopGame = function() {
         game.startedRooms.remove(this);
     }
-};
+}
 
 function Player(username, id) {
     this.username = username;
@@ -53,18 +53,24 @@ function updateGames() {
 // console.log(game.startedRooms);
     game.startedRooms.forEach(function(item, index) {
         item.updateGames();
-        console.log("Fuck kinderen")
+        console.log("Updated");
+        syncGame(item)
     })
 
 }
-var b = 0;
 function updatePhysics() {
     game.startedRooms.forEach(function(item, index) {
         item.updatePhysics();
-        console.log("Fuck kinderen")
+        console.log("Updated");
+        syncGame(item)
     })
 
 
+}
+function syncGame(game) {
+    game.players.forEach(function(item, index) {
+        io.sockets.socket(item.id).emit('update',game.localinstance)
+    })
 }
 
 
