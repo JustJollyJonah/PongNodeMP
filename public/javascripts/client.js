@@ -21,5 +21,7 @@ io.on('login', function(data) {
 });
 
 $(document).on("click", "#start", function() {
-    io.emit("start", localgame);
+    io.emit("start", localgame.roomnumber);
+
+
 });

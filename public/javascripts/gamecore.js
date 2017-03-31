@@ -15,28 +15,57 @@ function Room(roomnumber) {
     this.localinstance = new gameinstance.Game();
     this.players = [];
     this.roomnumber = roomnumber;
-    this.addPlayer = function(username) {
+    this.addPlayer = function(username, id) {
         if (this.players.length  < 2) {
-            this.players.push(username);
+            this.players.push(new Player(username, id));
         } else {
             return false;
         }
     };
     this.startGame = function() {
+        console.log("Hello");
+        if(!this.localinstance.started) {
         this.localinstance.startGame();
+        console.log("Hello there");
+        game.startedRooms.push(this);
+        return true;
+        } else {
+            return false;
+        }
 
+    };
+    this.updatePhysics = function() {
+        this.localinstance.updatePhysics();
+    };
+    this.updateGames = function() {
+        this.localinstance.updateGames();
+    };
+    this.stopGame = function() {
+        game.startedRooms.remove(this);
     }
 };
-function updatePhysics(){
-    game.startedRooms.forEach(function(item, index) {
-        item.localinstance.updatePhysics();
-    });
-};
 
-function updateGames(){
+function Player(username, id) {
+    this.username = username;
+    this.id = id;
+}
+function updateGames() {
+// console.log(game.startedRooms);
     game.startedRooms.forEach(function(item, index) {
-        item.localinstance.updateGames();
+        item.updateGames();
+        console.log("Fuck kinderen")
     })
-};
+
+}
+var b = 0;
+function updatePhysics() {
+    game.startedRooms.forEach(function(item, index) {
+        item.updatePhysics();
+        console.log("Fuck kinderen")
+    })
+
+
+}
+
 
 module.exports = { game: game, Room: Room};
