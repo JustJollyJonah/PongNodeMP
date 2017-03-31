@@ -2,7 +2,7 @@
  * Created by jonah on 23-Mar-17.
  */
 var localgame;
-$(document).on("click", "#myBtn",function () {
+$(document).on("click", "#mgyBtn",function () {
     console.log("sent join");
     var username = $('input[name="uname"]').val();
     var roomnumber = parseInt($('input[name="roomnumber"]').val());
@@ -42,6 +42,17 @@ function Setup() {
             //do handling of playername
             $(".modal").css("display","none");
             fillRooms();
+            $("body").css("background-color","white");
+
+            console.log("sent join");
+            var username = $('input[name="uname"]').val();
+            var roomnumber = parseInt($('input[name="roomnumber"]').val());
+            var msg = {
+                username: username,
+                roomnumber: roomnumber
+            };
+            io.emit('join', msg);
+            console.log(msg);
         }
 
 
