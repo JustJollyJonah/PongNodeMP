@@ -1,7 +1,13 @@
 <script src="/javascripts/client.js"></script>
-<div class="join_screen">
-    <label for="uname">Username: </label><input type="text" name="uname" ><br>
-    <label for="roomnumber">Roomnumber: </label><input type="text" name="roomnumber"><br>
-    <button id="join">Join game</button>
-
+<script>Setup();</script>
+<h1>Ultra supervette gamelobby (pong pong dingelingedong)</h1>
+<h3 id="begroeting"></h3>
+<div class="modal">
+    <div class="modal-content">
+        Insert your name: <input id="uname" type="text" name="uname" placeholder="Name...." onkeypress="return event.keyCode!=13"><br><br>
+        Insert room number: <input id="roomnumber" type="number" name="roomnumber" placeholder="Roomnumber..." onkeypress="return event.keyCode!=13"><br><br>
+        <button id="myBtn" type="button">ikke doorrijden</button>
+        <p id="nameError" style="color: red;"></p>
+    </div>
 </div>
+<div id="rooms"></div>
