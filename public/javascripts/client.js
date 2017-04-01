@@ -1,7 +1,17 @@
 /**
  * Created by jonah on 23-Mar-17.
  */
+var c;
+var ctx;
+$(document).ready(function() {
+c = document.getElementById("myCanvas");
+ctx = c.getContext("2d");
+});
+var currentY;
 var localgame;
+var player;
+var host;
+var started = false;
 $(document).on("click", "#mgyBtn",function () {
     console.log("sent join");
     var username = $('input[name="uname"]').val();
@@ -14,9 +24,17 @@ $(document).on("click", "#mgyBtn",function () {
     console.log(msg);
 });
 io.on('login', function(data) {
-    console.log("Sucessfully logged in as " + data.status);
+    // console.log("Sucessfully logged in as " + data.status + " and " +data.player);
     localgame = data.game;
-    console.log(localgame);
+    player = data.player;
+    // console.log(player);
+    // console.log(localgame);
+    if(data.player == 1) {
+        $('#start').css('display','block');
+        host = true;
+    } else {
+        host = false;
+    }
 
 });
 io.on('playerjoined', function(game) {
@@ -26,14 +44,40 @@ io.on('playerjoined', function(game) {
 
 $(document).on("click", "#start", function() {
     io.emit("start", localgame);
+    $('#start').css('display','none');
 });
 
-io.on('started', startGameLocal);
+io.on('started', function(instance) {
+    localgame = instance;
+    console.log(localgame);
+    // setInterval(update(), 15);
+    started = true;
+});
+io.on('update', function(data) {
+    // console.log('data');
+   localgame.localinstance = data;
+   update();
+   // console.log(data);
+});
 
-function startGameLocal(game) {
-    localgame.startGame();
+function update() {
+
+    draw();
+    processinput();
 }
-io.on('update', console.log("Hello"));
+
+function draw() {
+    ctx.clearRect(0, 0, c.width, c.height);
+    drawPlayer(ctx, localgame.localinstance.player1);
+    drawPlayer(ctx, localgame.localinstance.player2);
+    drawBall(ctx, localgame.localinstance.ball);
+    drawScore(ctx, localgame.localinstance.score);
+
+}
+function processinput() {
+    io.emit('input', currentY);
+}
+
 function Setup() {
     console.log("setup gerund");
     $(document).on("click", "#myBtn", function(){
@@ -51,7 +95,7 @@ function Setup() {
             //do handling of playername
             $(".modal").css("display","none");
             //fillRooms();
-            $("body").css("background-color","white");
+            $("body").css("background-color","black");
 
             console.log("sent join");
             var username = $('input[name="uname"]').val();
@@ -63,7 +107,9 @@ function Setup() {
             io.emit('join', msg);
             console.log(msg);
         }
-
+        if(host) {
+        $('#start').css('display','block');
+        }
 
     });
 
@@ -86,37 +132,33 @@ function fillRooms() {
 }
 
 
-//pong
+function drawPlayer(ctx, player) {
+        ctx.beginPath();
+        ctx.rect(player.posx, player.posy,10,player.hoogte);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+        ctx.stroke();
 
-/**
- * Created by Matthaia on 31-3-2017.
- */
-// function Ball(x, y, velx, vely){
-//     this.x = x;
-//     this.y = y;
-//     this.velx = velx;
-//     this.vely = vely;
-//     this.ballGrootte = 10;
-//
-//     this.draw = function(canvas){
-//         canvas.beginPath();
-//         canvas.arc(this.x, this.y, this.ballGrootte, 0, 2*Math.PI, false);
-//         canvas.fillStyle = 'white';
-//         canvas.fill();
-//         canvas.stroke();
-//     }
-// }
-//
-// function Plank(x, y, hoogte){
-//     this.x = x;
-//     this.y = y;
-//     this.hoogte = hoogte;
-//
-//     this.draw = function(canvas){
-//         canvas.beginPath();
-//         canvas.rect(this.x, this.y,10,this.hoogte);
-//         canvas.fillStyle = 'white';
-//         canvas.fill();
-//         canvas.stroke();
-//     }
-// }
+
+}
+function drawBall(ctx, ball) {
+
+        ctx.beginPath();
+        ctx.arc(ball.posx, ball.posy, ball.balGrootte, 0, 2*Math.PI, false);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+        ctx.stroke();
+
+}
+function drawScore(ctx, score) {
+
+        ctx.font = '24px Arial';
+        ctx.fillText(score.player1 + "", c.width/4, c.height / 8);
+        ctx.fillText(":", c.width/2, c.height / 8);
+        ctx.fillText(score.player2 + "", c.width/2 + c.width/5, c.height / 8);
+
+}
+
+function SetPlayerY(event){
+    currentY = Math.round(event.clientY-165, 0);
+}

@@ -1,7 +1,11 @@
+html {
+  height:100%;
+}
 body {
-  padding: 50px;
+  height:100%;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-    background-color: rgba(32,32,32,1);
+    background-color: black;
+  margin:0;
 }
 
 a {
@@ -79,8 +83,53 @@ h1{
   padding-top: 5px;
 }
 
-<!-- Game -->
 
+#flexbox {
+  height:90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 #myCanvas{
-    background-color: rgba(0,0,0,1);
+  display:flex;
+  align-self:center;
+  background-color: rgba(0,0,0,1);
+  border:solid 1px white;
+}
+#start {
+  height:3%;
+  position: absolute;
+  top:0;
+  margin:auto;
+  left:0;
+  bottom:0;
+  right:0;
+  z-index:1;
+  display:none;
+}
+footer { width:100%;
+  height:10%;
+/*background-color: orange;*/
+display:flex;
+  flex-direction:row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+footer hr {
+  display:flex;
+  width:100%;
+
+}
+footer p {
+  color:white;
+  display:flex;
+  width:22%;
+  align-self:flex-end;
+}
+footer a {
+  margin-left:10px;
+  margin-bottom: 14px;
+  width:4%;
+  display:flex;
+  align-self:flex-end;
 }

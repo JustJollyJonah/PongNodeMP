@@ -1,7 +1,7 @@
 <script src="/javascripts/client.js"></script>
 <script>Setup();</script>
-<h1>Ultra supervette gamelobby (pong pong dingelingedong)</h1>
-<h3 id="begroeting"></h3>
+<!--<h1>Ultra supervette gamelobby (pong pong dingelingedong)</h1>-->
+<!--<h3 id="begroeting"></h3>-->
 <div class="modal">
     <div class="modal-content">
         Insert your name: <input id="uname" type="text" name="uname" placeholder="Name...." onkeypress="return event.keyCode!=13"><br><br>
@@ -12,8 +12,15 @@
 </div>
 <div id="rooms"></div>
 
-<div>
-    <canvas id="myCanvas" width="800" height="600" onmousemove="SetPlayerY(event)">
+<div id="flexbox">
+    <canvas id="myCanvas" width="800" height="600" onmousemove="SetPlayerY(event)" style="background-color: black">
         Your browser does not support html5 canvas tag.
     </canvas>
+    <button id="start">Start game</button>
 </div>
+
+<footer>
+    <hr>
+    <a href="https://www.github.com/justjollyjonah">GitHub</a>
+    <p>Jonah van den Bos & Matthias Oosterom © 2017</p>
+</footer>

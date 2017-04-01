@@ -101,12 +101,13 @@ function onConnection(socket) {
         console.log("join received");
         var roomnumber = parseInt(data.roomnumber);
         var username = data.username;
+        var playernumber;
         // console.log(game.game.rooms);
         // console.log(data.roomnumber + ' ' + data.username);
         var newgame = new game.Room(roomnumber);
+        var current_game;
         var found = false;
         var index = 0;
-        socket.room = newgame;
         for (var i = 0; i < game.game.rooms.length; i++) {
             // console.log(game.game.rooms[i].roomnumber + " " + roomnumber);
             if (game.game.rooms[i].roomnumber == roomnumber) {
@@ -117,40 +118,60 @@ function onConnection(socket) {
         }
         if (!found) {
             newgame.addPlayer(username, socket.id);
-            game.game.rooms.push(newgame);
+            current_game = game.game.rooms.push(newgame);
             game.game.users.push(username);
             socket.username = username;
 
-            socket.emit('login', {status: "host", game: game.game.rooms[game.game.rooms.indexOf(newgame)]})
+            playernumber = 1;
+            socket.emit('login', {status: "host", game: game.game.rooms[game.game.rooms.indexOf(newgame)], player: playernumber})
         } else {
             game.game.users.push(username);
+            var playercount = game.game.rooms[index].players.length;
+            console.log(playercount);
+            if(playercount == 0){
+                playernumber = 1;
+            } else {
+                playernumber = 2;
+            }
             game.game.rooms[index].addPlayer(username, socket.id);
+            current_game = game.game.rooms[index];
             socket.username = username;
-            socket.emit('login', {status: 'joined', game: game.game.rooms[index]});
-            emitJoinToRoom(game.game.rooms[index]);
+            socket.emit('login', {status: 'joined', game: game.game.rooms[index], player: playernumber});
+            // emitJoinToRoom(game.game.rooms[index]);
             // console.log(game.game.rooms[index])
         }
         socket.on("start", function (data) {
-            // console.log(socket.room);
+            // console.log(data);
             var current_room = game.game.rooms.filter(function (item) {
                 if (item.roomnumber == data.roomnumber) {
                     return item;
                 }
             });
-            console.log(current_room[0].players.length);
+            // console.log("Current Room " + current_room);
+            // console.log(current_room[0].players.length);
             if (current_room[0].players.length == 2) {
-                console.log('hello');
+                // console.log('hello');
                 current_room[0].startGame();
+                // console.log(current_room[0]);
                 emitStartedToRoom(current_room[0])
             }
-        });
-    });
 
+
+        });
+        socket.on('input', function(data) {
+            // console.log("received input");
+            HandleInput(data, playernumber, current_game);
+        })
+
+
+
+    });
 
     function emitStartedToRoom(room) {
       room.players.forEach(function(item, index) {
-        io.to(item.id).emit("started", room.localinstance);
-        console.log("Sent biatch");
+          // console.log(item.id);
+        io.to(item.id).emit("started", room);
+        // console.log("Sent biatch");
       })
     }
     function emitJoinToRoom(room) {
@@ -161,31 +182,57 @@ function onConnection(socket) {
     }
 }
 
-setInterval(updateGames, 45);
 setInterval(updatePhysics, 15);
 
-function updateGames() {
-// console.log(game.startedRooms);
-    game.game.startedRooms.forEach(function(item, index) {
-        item.updateGames();
-        console.log("Updated");
-        syncGame(item)
-    })
 
-}
 function updatePhysics() {
     game.game.startedRooms.forEach(function(item, index) {
         item.updatePhysics();
-        console.log("Updated");
+        // console.log("Updated");
+        // HandleInput();
         syncGame(item)
     })
 
 
 }
 function syncGame(game) {
+    // console.log(game);
     game.players.forEach(function(item, index) {
         io.to(item.id).emit('update',game.localinstance)
     })
 }
 
 
+function HandleInput(y, playernumber, room) {
+    var direction;
+    var yLocal;
+    console.log(playernumber)
+    if(playernumber == 1) {
+        if(room.localinstance.player1.posy > y) {
+            direction = "-";
+            yLocal = y;
+            room.localinstance.handleInput(direction, yLocal,playernumber);
+
+        } else if(room.localinstance.player1.posy == y) {
+            //ignore the input
+        } else {
+            direction = "+";
+            yLocal = y;
+            room.localinstance.handleInput(direction, yLocal, playernumber);
+        }
+
+    } else {
+        console.log("in here");
+        if(room.localinstance.player2.posy > y) {
+            direction = "-";
+            yLocal = y;
+            room.localinstance.handleInput(direction, yLocal, playernumber);
+        } else if(room.localinstance.player2.posy == y) {
+            //ignore the input
+        } else {
+            direction = "+";
+            yLocal = y;
+            room.localinstance.handleInput(direction, yLocal, playernumber);
+        }
+    }
+}

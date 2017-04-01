@@ -37,11 +37,9 @@ function Room(roomnumber) {
     this.updatePhysics = function() {
         this.localinstance.updatePhysics();
     };
-    this.updateGames = function() {
-        this.localinstance.updateGames();
-    };
     this.stopGame = function() {
         game.startedRooms.remove(this);
+        this.localinstance = new gameinstance.Game();
     }
 }
 
