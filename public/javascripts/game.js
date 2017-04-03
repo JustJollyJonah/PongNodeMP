@@ -33,20 +33,21 @@ function Game() {
     };
     this.updatePhysics = function() {
 
+        //player links
         if(this.ball.posx - this.ball.balGrootte <= this.player2.posx + 10){
-            //console.log("ball voorbij plankAI");
+            //console.log("ball voorbij player links");
             if((this.ball.posy <= this.player2.posy + this.player2.hoogte && this.ball.posy >= this.player2.posy)) {
-                //console.log("ball raakt plankAi");
+                //console.log("ball raakt player links");
                 this.ball.velx = this.ball.velx * -1;
                 this.ball.vely = this.ball.vely + this.getNumber();
             }
         }
 
-        //check if the plankplayer was hit
-        if(this.ball.posx + this.ball.balGrootte >= this.player1.posx + 10){
-            //console.log("ball voorbij plank");
+        //player rechts
+        if(this.ball.posx + this.ball.balGrootte >= this.player1.posx){
+            //console.log("ball voorbij player rechts");
             if((this.ball.posy <= this.player1.posy + this.player1.hoogte && this.ball.posy >= this.player2.posy)) {
-                //console.log("ball raakt plank");
+                //console.log("ball raakt player rechts");
                 this.ball.velx = this.ball.velx * -1;
                 this.ball.vely = this.ball.vely + this.getNumber();
             }

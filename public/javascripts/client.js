@@ -3,9 +3,16 @@
  */
 var c;
 var ctx;
+var audio;
 $(document).ready(function() {
 c = document.getElementById("myCanvas");
 ctx = c.getContext("2d");
+try{
+    audio = new Audio('../Sound/Goal.mp3');
+    console.log("Sound geladen");
+}catch(e){
+    console.log("Geluid kan niet geladen worden " + e);
+}
 });
 var currentY;
 var localgame;
@@ -24,7 +31,7 @@ $(document).on("click", "#mgyBtn",function () {
     console.log(msg);
 });
 io.on('login', function(data) {
-    // console.log("Sucessfully logged in as " + data.status + " and " +data.player);
+    // console.log("Successfully logged in as " + data.status + " and " +data.player);
     localgame = data.game;
     player = data.player;
     // console.log(player);
@@ -55,6 +62,8 @@ io.on('started', function(instance) {
 });
 io.on('update', function(data) {
     // console.log('data');
+   if(data.score.player2 > localgame.localinstance.score.player2 && player === 1){playSound()}
+   if(data.score.player1 > localgame.localinstance.score.player1 && player === 2){playSound()}
    localgame.localinstance = data;
    update();
    // console.log(data);
@@ -64,6 +73,11 @@ function update() {
 
     draw();
     processinput();
+}
+function playSound(){
+    if(audio != undefined || audio != null) {
+        //audio.play();
+    }
 }
 
 function draw() {
@@ -117,7 +131,7 @@ function Setup() {
 
 
 //rooms maken
-var roomArray = ["Awesome Room", "Less Awesome room", "Stijn's gay paradise"];
+var roomArray = ["Awesome Room", "Less Awesome room"];
 
 function fillRooms() {
     var rooms = document.getElementById("rooms");
