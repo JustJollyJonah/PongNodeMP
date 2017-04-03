@@ -44,6 +44,10 @@ io.on('login', function(data) {
     }
 
 });
+io.on('disconnect', function(room) {
+    $('#start').css('display','block');
+
+});
 io.on('playerjoined', function(game) {
     localgame = game;
     console.log('other player joined');

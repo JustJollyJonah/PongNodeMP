@@ -102,14 +102,12 @@ function onConnection(socket) {
         var roomnumber = parseInt(data.roomnumber);
         var username = data.username;
         var playernumber;
-        // console.log(game.game.rooms);
-        // console.log(data.roomnumber + ' ' + data.username);
+        var id = socket.id;
         var newgame = new game.Room(roomnumber);
         var current_game;
         var found = false;
         var index = 0;
         for (var i = 0; i < game.game.rooms.length; i++) {
-            // console.log(game.game.rooms[i].roomnumber + " " + roomnumber);
             if (game.game.rooms[i].roomnumber == roomnumber) {
                 found = true;
                 index = i;
@@ -117,11 +115,10 @@ function onConnection(socket) {
             }
         }
         if (!found) {
-            newgame.addPlayer(username, socket.id);
+            newgame.addPlayer(username, id);
             current_game = game.game.rooms.push(newgame);
             game.game.users.push(username);
             socket.username = username;
-
             playernumber = 1;
             socket.emit('login', {status: "host", game: game.game.rooms[game.game.rooms.indexOf(newgame)], player: playernumber})
         } else {
@@ -161,6 +158,9 @@ function onConnection(socket) {
         socket.on('input', function(data) {
             // console.log("received input");
             HandleInput(data, playernumber, current_game);
+        });
+        socket.on('disconnect', function(data) {
+            current_game.removePlayer(username, id);
         })
 
 
@@ -174,10 +174,11 @@ function onConnection(socket) {
         // console.log("Sent biatch");
       })
     }
-    function emitJoinToRoom(room) {
+    function emitDisconnectToRoom(room) {
         room.players.forEach(function(item, index) {
-            io.to(item.id).emit("playerjoined", room.localinstance);
-            console.log("Sent biatch");
+            // console.log(item.id);
+            io.to(item.id).emit("disconnect", room);
+            // console.log("Sent biatch");
         })
     }
 }

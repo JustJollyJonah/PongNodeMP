@@ -38,8 +38,13 @@ function Room(roomnumber) {
         this.localinstance.updatePhysics();
     };
     this.stopGame = function() {
-        game.startedRooms.remove(this);
         this.localinstance = new gameinstance.Game();
+    };
+    this.removePlayer = function(username, id) {
+        var player = new Player(username, id);
+        var foundplayer = this.players.indexOf(player);
+        this.players.splice(foundplayer,1);
+        this.stopGame();
     }
 }
 
