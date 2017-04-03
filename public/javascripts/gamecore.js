@@ -8,7 +8,7 @@ var game = {
     startedRooms: []
 };
 var io = require("../../bin/www");
-console.log(io);
+// console.log(io);
 
 
 function Room(roomnumber) {
@@ -23,10 +23,10 @@ function Room(roomnumber) {
         }
     };
     this.startGame = function() {
-        console.log("Hello");
+        // console.log("Hello");
         if(!this.localinstance.started) {
         this.localinstance.startGame();
-        console.log("Hello there");
+        // console.log("Hello there");
         game.startedRooms.push(this);
         return true;
         } else {
@@ -38,7 +38,9 @@ function Room(roomnumber) {
         this.localinstance.updatePhysics();
     };
     this.stopGame = function() {
+        game.startedRooms.splice(this,1);
         this.localinstance = new gameinstance.Game();
+        this.localinstance.stopGame()
     };
     this.removePlayer = function(username, id) {
         var player = new Player(username, id);

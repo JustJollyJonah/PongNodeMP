@@ -122,20 +122,27 @@ function onConnection(socket) {
             playernumber = 1;
             socket.emit('login', {status: "host", game: game.game.rooms[game.game.rooms.indexOf(newgame)], player: playernumber})
         } else {
-            game.game.users.push(username);
-            var playercount = game.game.rooms[index].players.length;
-            console.log(playercount);
-            if(playercount == 0){
-                playernumber = 1;
-            } else {
-                playernumber = 2;
+            if(game.game.rooms[index].players.length < 2) {
+                game.game.users.push(username);
+                var playercount = game.game.rooms[index].players.length;
+                // console.log(playercount);
+                game.game.rooms[index].addPlayer(username, socket.id);
+                current_game = game.game.rooms[index];
+                if (playercount == 0) {
+                    playernumber = 1;
+                } else {
+                    playernumber = 2;
+                    emitJoinToRoom(game.game.rooms[index]);
+                }
+
+                socket.username = username;
+                socket.emit('login', {status: 'joined', game: game.game.rooms[index], player: playernumber});
+                socket.emit("roomcheck", false);
             }
-            game.game.rooms[index].addPlayer(username, socket.id);
-            current_game = game.game.rooms[index];
-            socket.username = username;
-            socket.emit('login', {status: 'joined', game: game.game.rooms[index], player: playernumber});
-            // emitJoinToRoom(game.game.rooms[index]);
-            // console.log(game.game.rooms[index])
+            else {
+
+                socket.emit('roomcheck', true);
+            }
         }
         socket.on("start", function (data) {
             // console.log(data);
@@ -156,11 +163,18 @@ function onConnection(socket) {
 
         });
         socket.on('input', function(data) {
-            // console.log("received input");
-            HandleInput(data, playernumber, current_game);
+            if(data.localGame.localinstance.started){
+                var current_room = game.game.rooms.filter(function (item) {
+                    if (item.roomnumber == data.localGame.roomnumber) {
+                        return item;
+                    }
+                });
+            HandleInput(data.currentY, playernumber, current_room[0]);
+            }
         });
         socket.on('disconnect', function(data) {
             current_game.removePlayer(username, id);
+            emitDisconnectToRoom(current_game);
         })
 
 
@@ -169,16 +183,23 @@ function onConnection(socket) {
 
     function emitStartedToRoom(room) {
       room.players.forEach(function(item, index) {
-          // console.log(item.id);
+
         io.to(item.id).emit("started", room);
-        // console.log("Sent biatch");
+
       })
     }
     function emitDisconnectToRoom(room) {
         room.players.forEach(function(item, index) {
-            // console.log(item.id);
-            io.to(item.id).emit("disconnect", room);
-            // console.log("Sent biatch");
+
+            io.to(item.id).emit("user_disconnect", room);
+
+        })
+    }
+    function emitJoinToRoom(room) {
+        room.players.forEach(function(item, index) {
+
+            io.to(item.id).emit("playerjoined", room);
+
         })
     }
 }
@@ -188,10 +209,11 @@ setInterval(updatePhysics, 15);
 
 function updatePhysics() {
     game.game.startedRooms.forEach(function(item, index) {
+        syncGame(item);
         item.updatePhysics();
         // console.log("Updated");
         // HandleInput();
-        syncGame(item)
+
     })
 
 
@@ -207,7 +229,7 @@ function syncGame(game) {
 function HandleInput(y, playernumber, room) {
     var direction;
     var yLocal;
-    console.log(playernumber)
+    // console.log(room);
     if(playernumber == 1) {
         if(room.localinstance.player1.posy > y) {
             direction = "-";
@@ -223,7 +245,7 @@ function HandleInput(y, playernumber, room) {
         }
 
     } else {
-        console.log("in here");
+        // console.log("in here");
         if(room.localinstance.player2.posy > y) {
             direction = "-";
             yLocal = y;

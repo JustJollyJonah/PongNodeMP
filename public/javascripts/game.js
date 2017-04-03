@@ -32,7 +32,7 @@ function Game() {
         player2: 0,
     };
     this.updatePhysics = function() {
-
+        if(this.started) {
         //player links
         if(this.ball.posx - this.ball.balGrootte <= this.player2.posx + 10){
             //console.log("ball voorbij player links");
@@ -46,18 +46,18 @@ function Game() {
         //player rechts
         if(this.ball.posx + this.ball.balGrootte >= this.player1.posx){
             //console.log("ball voorbij player rechts");
-            if((this.ball.posy <= this.player1.posy + this.player1.hoogte && this.ball.posy >= this.player2.posy)) {
+            if((this.ball.posy <= this.player1.posy + this.player1.hoogte && this.ball.posy >= this.player1.posy)) {
                 //console.log("ball raakt player rechts");
                 this.ball.velx = this.ball.velx * -1;
                 this.ball.vely = this.ball.vely + this.getNumber();
             }
         }
         var scored = false;
-        if (this.ball.posx - this.ball.balGrootte < 0){
+        if (this.ball.posx - this.ball.balGrootte < 15){
             //linkerkant
             this.score.player2++;
             scored = true;
-        }else if (this.ball.posx + this.ball.balGrootte > 800){
+        }else if (this.ball.posx + this.ball.balGrootte > 785){
             //rechterkant
             this.score.player1++;
             scored = true;
@@ -84,6 +84,7 @@ function Game() {
         }
         this.ball.posy+= this.ball.vely;
         this.ball.posx+= this.ball.velx;
+    }
     };
 
 
@@ -114,7 +115,8 @@ function Game() {
         this.ball.velx = this.veloctityX;
         this.ball.vely = this.veloctityY;
         this.ball.balGrootte = 10;
-    }
+    };
+
     this.getNumber = function(){
         var negativeOrPositive = Math.floor(Math.random() * 2);
         var speedDifference = Math.random() * 2;
@@ -124,6 +126,9 @@ function Game() {
         }else{
             return speedDifference * -1;
         }
+    };
+    this.stopGame = function() {
+        this.started = false;
     }
 }
 
