@@ -80,7 +80,7 @@ function update() {
 }
 function playSound(){
     if(audio != undefined || audio != null) {
-        //audio.play();
+        audio.play();
     }
 }
 
