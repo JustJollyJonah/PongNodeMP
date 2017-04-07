@@ -8,10 +8,11 @@
     <h2>Loading...</h2>
     <div id="loader"></div>
 </div>
+
 <div class="modal">
     <div class="modal-content">
         Insert your name: <input id="uname" type="text" name="uname" placeholder="Name...." onkeypress="return event.keyCode!=13"><br><br>
-        Insert roomnumber: <input id="roomnumber" type="number" name="roomnumber" placeholder="Roomnumber..." onkeypress="return event.keyCode!=13"><br><br>
+        Insert roomnumber: <input id="roomnumber" type="number" name="roomnumber" placeholder="Roomnumber..." onkeypress="return event.keyCode!=13" min="1" max="100"><br><br>
         <button id="myBtn" type="button">Join game</button>
         <p id="nameError" style="color: red;"></p>
     </div>
@@ -26,7 +27,7 @@
 </div>
 
 <footer>
-
-    <a href="https://www.github.com/justjollyjonah">GitHub</a>
-    <p>Jonah van den Bos & Matthias Oosterom © 2017</p>
+    <div><a href="https://www.github.com/justjollyjonah">GitHub</a><a href="tests.hbs">Tests</a></div>
+    <div id="title"><h1>Pong Node MP</h1></div>
+    <div><p>Jonah van den Bos & Matthias Oosterom © 2017</p></div>
 </footer>

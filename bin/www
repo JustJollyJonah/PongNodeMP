@@ -93,10 +93,13 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+//Als er verbonden is met een socket
 function onConnection(socket) {
     console.log("user connected via websocket");
     socket.userid = UUID();
+    //Geef succesvolle verbinding door
     socket.emit("connected", {id: socket.userid});
+    //Luister naar join event
     socket.on('join', function (data) {
         console.log("join received");
         var roomnumber = parseInt(data.roomnumber);
@@ -125,7 +128,6 @@ function onConnection(socket) {
             if(game.game.rooms[index].players.length < 2) {
                 game.game.users.push(username);
                 var playercount = game.game.rooms[index].players.length;
-                // console.log(playercount);
                 game.game.rooms[index].addPlayer(username, socket.id);
                 current_game = game.game.rooms[index];
                 if (playercount == 0) {
@@ -145,18 +147,13 @@ function onConnection(socket) {
             }
         }
         socket.on("start", function (data) {
-            // console.log(data);
             var current_room = game.game.rooms.filter(function (item) {
                 if (item.roomnumber == data.roomnumber) {
                     return item;
                 }
             });
-            // console.log("Current Room " + current_room);
-            // console.log(current_room[0].players.length);
             if (current_room[0].players.length == 2) {
-                // console.log('hello');
                 current_room[0].startGame();
-                // console.log(current_room[0]);
                 emitStartedToRoom(current_room[0])
             }
 
@@ -211,15 +208,12 @@ function updatePhysics() {
     game.game.startedRooms.forEach(function(item, index) {
         syncGame(item);
         item.updatePhysics();
-        // console.log("Updated");
-        // HandleInput();
 
     })
 
 
 }
 function syncGame(game) {
-    // console.log(game);
     game.players.forEach(function(item, index) {
         io.to(item.id).emit('update',game.localinstance)
     })
@@ -229,7 +223,7 @@ function syncGame(game) {
 function HandleInput(y, playernumber, room) {
     var direction;
     var yLocal;
-    // console.log(room);
+
     if(playernumber == 1) {
         if(room.localinstance.player1.posy - (y-40) > 3 || room.localinstance.player1.posy - (y-40) < -3) {
         if(room.localinstance.player1.posy > y - 40) {
@@ -247,7 +241,6 @@ function HandleInput(y, playernumber, room) {
         }
     } else {
         if(room.localinstance.player2.posy - (y-40) > 3 || room.localinstance.player2.posy - (y-40) < -3) {
-        // console.log("in here");
         if(room.localinstance.player2.posy > y - 40) {
             direction = "-";
             yLocal = y;

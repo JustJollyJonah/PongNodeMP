@@ -19,30 +19,17 @@ function showPage() {
     $('.splash').css('display', 'none');
     $('.modal').css('display', 'block');
     $('footer').css('display', 'flex');
+    $('.title').css('display', 'block');
 }
 var currentY;
 var localgame;
 var player;
 var host;
 var started = false;
-// $(document).on("click", "#mgyBtn",function () {
-//     console.log("sent join");
-//     var username = $('input[name="uname"]').val();
-//     var roomnumber = parseInt($('input[name="roomnumber"]').val());
-//     var msg = {
-//         username: username,
-//         roomnumber: roomnumber
-//     };
-//     io.emit('join', msg);
-//     console.log(msg);
-// });
 io.on('login', function(data) {
-    // console.log("Successfully logged in as " + data.status + " and " +data.player);
     localgame = data.game;
     player = data.player;
     $('#flexbox').css('display', 'flex');
-    // console.log(player);
-    // console.log(localgame);
     if(data.player == 1) {
         $('#start').css('display','block');
         host = true;
@@ -65,8 +52,7 @@ io.on('user_disconnect', function(room) {
 });
 io.on('playerjoined', function(game) {
     localgame = game;
-    // console.log(game);
-    // console.log('other player joined');
+
 });
 
 $(document).on("click", "#start", function() {
@@ -83,17 +69,14 @@ $(document).on("click", "#start", function() {
 
 io.on('started', function(instance) {
     localgame = instance;
-    // console.log(localgame);
-    // setInterval(update(), 15);
+
     started = true;
 });
 io.on('update', function(data) {
-    // console.log('data');
    if(data.score.player2 > localgame.localinstance.score.player2 && player === 1){playSound()}
    if(data.score.player1 > localgame.localinstance.score.player1 && player === 2){playSound()}
    localgame.localinstance = data;
    update();
-   // console.log(data);
 });
 
 
@@ -121,12 +104,9 @@ function processinput() {
 }
 
 function Setup() {
-    // console.log("setup gerund");
     $(document).on("click", "#myBtn", function(){
-        // console.log("button geklikt");
         var nameValue = document.getElementById("uname").value;
         var roomNumber = document.getElementById("roomnumber").value;
-        // console.log(roomNumber);
         if(nameValue.length == 0){
             $('#nameError').html("Please enter a valid name ");
             nameValue = null;
@@ -134,12 +114,7 @@ function Setup() {
             $('#nameError').html("Please enter a valid number");
             roomNumber = 0;
         }else {
-            //do handling of playername
-
-            //fillRooms();
             $("body").css("background-color","black");
-
-            // console.log("sent join");
             var username = $('input[name="uname"]').val();
             var roomnumber = parseInt($('input[name="roomnumber"]').val());
             var msg = {
@@ -147,8 +122,6 @@ function Setup() {
                 roomnumber: roomnumber
             };
             io.emit('join', msg);
-            // console.log(msg);
-
             io.on("roomcheck", function(data) {
                 if(data) {
                     $('#nameError').html("Room is full");
@@ -193,7 +166,6 @@ function drawScore(ctx, score, username1, username2) {
         ctx.fillText(":", c.width/2, c.height / 8);
         ctx.fillText(score.player2 + "", c.width/2 + c.width/5, c.height / 8);
         ctx.fillText(username1+ "", c.width/2 + c.width/5 -20, c.height / 8 - 40);
-
 }
 function SetPlayerY(event){
     var rect = c.getBoundingClientRect();
