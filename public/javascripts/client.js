@@ -123,6 +123,7 @@ function Setup() {
             };
             io.emit('join', msg);
             io.on("roomcheck", function(data) {
+                console.log("Kak");
                 if(data) {
                     $('#nameError').html("Room is full");
                 } else {

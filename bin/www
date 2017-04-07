@@ -119,10 +119,13 @@ function onConnection(socket) {
         }
         if (!found) {
             newgame.addPlayer(username, id);
-            current_game = game.game.rooms.push(newgame);
+            game.game.rooms.push(newgame);
+            current_game = game.game.rooms[game.game.rooms.indexOf(newgame)];
+            console.log(current_game);
             game.game.users.push(username);
             socket.username = username;
             playernumber = 1;
+            console.log("send");
             socket.emit('login', {status: "host", game: game.game.rooms[game.game.rooms.indexOf(newgame)], player: playernumber})
         } else {
             if(game.game.rooms[index].players.length < 2) {
@@ -136,7 +139,7 @@ function onConnection(socket) {
                     playernumber = 2;
                     emitJoinToRoom(game.game.rooms[index]);
                 }
-
+                console.log("send");
                 socket.username = username;
                 socket.emit('login', {status: 'joined', game: game.game.rooms[index], player: playernumber});
                 socket.emit("roomcheck", false);
@@ -170,7 +173,7 @@ function onConnection(socket) {
             }
         });
         socket.on('disconnect', function(data) {
-            current_game.removePlayer(username, id);
+            current_game.removePlayer(socket.id);
             emitDisconnectToRoom(current_game);
         })
 
