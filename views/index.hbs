@@ -1,7 +1,13 @@
 <script src="/javascripts/client.js"></script>
 <script>Setup();</script>
+<link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
 <!--<h1>Ultra supervette gamelobby (pong pong dingelingedong)</h1>-->
 <!--<h3 id="begroeting"></h3>-->
+<div class="splash">
+    <h1>Pong Node MP</h1>
+    <h2>Loading...</h2>
+    <div id="loader"></div>
+</div>
 <div class="modal">
     <div class="modal-content">
         Insert your name: <input id="uname" type="text" name="uname" placeholder="Name...." onkeypress="return event.keyCode!=13"><br><br>
@@ -10,7 +16,7 @@
         <p id="nameError" style="color: red;"></p>
     </div>
 </div>
-<div id="rooms"></div>
+
 
 <div id="flexbox">
     <canvas id="myCanvas" width="800" height="600" onmousemove="SetPlayerY(event)" style="background-color: black">
@@ -20,7 +26,7 @@
 </div>
 
 <footer>
-    <hr>
+
     <a href="https://www.github.com/justjollyjonah">GitHub</a>
     <p>Jonah van den Bos & Matthias Oosterom © 2017</p>
 </footer>

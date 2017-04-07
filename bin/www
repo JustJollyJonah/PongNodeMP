@@ -231,31 +231,34 @@ function HandleInput(y, playernumber, room) {
     var yLocal;
     // console.log(room);
     if(playernumber == 1) {
-        if(room.localinstance.player1.posy > y) {
+        if(room.localinstance.player1.posy - (y-40) > 3 || room.localinstance.player1.posy - (y-40) < -3) {
+        if(room.localinstance.player1.posy > y - 40) {
             direction = "-";
             yLocal = y;
             room.localinstance.handleInput(direction, yLocal,playernumber);
 
-        } else if(room.localinstance.player1.posy == y) {
+        } else if(room.localinstance.player1.posy == y - 40) {
             //ignore the input
         } else {
             direction = "+";
             yLocal = y;
             room.localinstance.handleInput(direction, yLocal, playernumber);
         }
-
+        }
     } else {
+        if(room.localinstance.player2.posy - (y-40) > 3 || room.localinstance.player2.posy - (y-40) < -3) {
         // console.log("in here");
-        if(room.localinstance.player2.posy > y) {
+        if(room.localinstance.player2.posy > y - 40) {
             direction = "-";
             yLocal = y;
             room.localinstance.handleInput(direction, yLocal, playernumber);
-        } else if(room.localinstance.player2.posy == y) {
+        } else if(room.localinstance.player2.posy == y - 40) {
             //ignore the input
         } else {
             direction = "+";
             yLocal = y;
             room.localinstance.handleInput(direction, yLocal, playernumber);
+        }
         }
     }
 }

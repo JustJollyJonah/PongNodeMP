@@ -5,6 +5,7 @@ var c;
 var ctx;
 var audio;
 $(document).ready(function() {
+    setTimeout(showPage, 4000);
 c = document.getElementById("myCanvas");
 ctx = c.getContext("2d");
 try{
@@ -14,6 +15,11 @@ try{
     // console.log("Geluid kan niet geladen worden " + e);
 }
 });
+function showPage() {
+    $('.splash').css('display', 'none');
+    $('.modal').css('display', 'block');
+    $('footer').css('display', 'flex');
+}
 var currentY;
 var localgame;
 var player;
@@ -34,6 +40,7 @@ io.on('login', function(data) {
     // console.log("Successfully logged in as " + data.status + " and " +data.player);
     localgame = data.game;
     player = data.player;
+    $('#flexbox').css('display', 'flex');
     // console.log(player);
     // console.log(localgame);
     if(data.player == 1) {
@@ -41,13 +48,19 @@ io.on('login', function(data) {
         host = true;
     } else {
         host = false;
+        ctx.textAlign = "center";
+        ctx.fillText("Waiting for host to start the game", c.width / 2, c.height/8);
+
     }
 
 });
-io.on('roomfull')
+
 io.on('user_disconnect', function(room) {
     $('#start').css('display','block');
     localgame = room;
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.textAlign = "center";
+    ctx.fillText("User disconnected from the game", c.width / 2, c.height/8);
 
 });
 io.on('playerjoined', function(game) {
@@ -61,10 +74,10 @@ $(document).on("click", "#start", function() {
     io.emit("start", localgame);
     $('#start').css('display','none');
     } else {
-        // console.log("yo mama");
         ctx.font = '24px Arial';
+        ctx.textAlign = "center";
         ctx.fillStyle ="red";
-        ctx.fillText("Not enough players in game", c.width /3, c.height/2);
+        ctx.fillText("Not enough players in game", c.width /2, c.height/2);
     }
 });
 
@@ -154,22 +167,6 @@ function Setup() {
 }
 
 
-//rooms maken
-var roomArray = ["Awesome Room", "Less Awesome room"];
-
-function fillRooms() {
-    var rooms = document.getElementById("rooms");
-    rooms.innerHTML += "<ul>";
-    for (i = 0; i < roomArray.length; i++) {
-        var div = document.createElement('div');
-        div.innerHTML = "<li>" + roomArray[i] + "</li><BR>  ";
-        rooms.appendChild(div);
-    }
-    rooms.innerHTML += "</ul>";
-
-}
-
-
 function drawPlayer(ctx, player) {
         ctx.beginPath();
         ctx.rect(player.posx, player.posy,10,player.hoogte);
@@ -199,5 +196,6 @@ function drawScore(ctx, score, username1, username2) {
 
 }
 function SetPlayerY(event){
-    currentY = Math.round(event.clientY-165, 0);
+    var rect = c.getBoundingClientRect();
+    currentY =  Math.round((event.clientY-rect.top)/(rect.bottom-rect.top)*c.height);
 }
