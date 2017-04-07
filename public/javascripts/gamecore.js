@@ -7,8 +7,6 @@ var game = {
     users: [],
     startedRooms: []
 };
-var io = require("../../bin/www");
-// console.log(io);
 
 
 function Room(roomnumber) {
@@ -23,10 +21,8 @@ function Room(roomnumber) {
         }
     };
     this.startGame = function() {
-        // console.log("Hello");
         if(!this.localinstance.started) {
         this.localinstance.startGame();
-        // console.log("Hello there");
         game.startedRooms.push(this);
         return true;
         } else {
