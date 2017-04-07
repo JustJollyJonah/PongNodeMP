@@ -175,21 +175,3 @@ footer a {
   display:flex;
   align-self:flex-end;
 }
-
-/* Testing Results */
-#testresults, #testresults body {
-    height: auto;
-    overflow-y: auto;
-}
-
-.bg-green {background-color: green;}
-.bg-orange {background-color: orange;}
-.bg-red {background-color: red;}
-.bg-gray {background-color: gray;}
-
-.results {width: 600px;}
-.results td {padding: 5px;}
-.results, .results td {border: 1px solid black; border-collapse: collapse;}
-.center {text-align: center;}
-
-.legend {display: inline-block;}

@@ -6,14 +6,14 @@ var ctx;
 var audio;
 $(document).ready(function() {
     setTimeout(showPage, 4000);
-    c = document.getElementById("myCanvas");
-    ctx = c.getContext("2d");
-    try {
-        audio = new Audio("../Sound/Goal.mp3");
-        // console.log("Sound geladen");
-    } catch (e){
-        // console.log("Geluid kan niet geladen worden " + e);
-    }
+c = document.getElementById("myCanvas");
+ctx = c.getContext("2d");
+try{
+    audio = new Audio('../Sound/Goal.mp3');
+    // console.log("Sound geladen");
+}catch(e){
+    // console.log("Geluid kan niet geladen worden " + e);
+}
 });
 function showPage() {
     $('.splash').css('display', 'none');
